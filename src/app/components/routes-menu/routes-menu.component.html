@@ -1,8 +1,8 @@
 <!-- Only display the routes menu if there is at least a selected environment -->
 <ng-container *ngIf="activeEnvironment$ | async as activeEnvironment">
   <div class="routes-menu d-flex flex-column h-100" appMousedragDeadzone>
-    <ul class="nav menu-header d-flex justify-content-between">
-      <li class="nav-item">
+    <div class="d-flex">
+      <div class="nav menu-header d-flex justify-content-between">
         <a
           class="nav-link text-primary"
           (click)="addRoute()"
@@ -10,23 +10,24 @@
         >
           <i class="material-icons">add_box</i>
         </a>
-      </li>
-    </ul>
+      </div>
 
-    <div class="form-group">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text pl-0">Filter</span>
+      <div class="form-group d-flex">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="route-search"
+            placeholder="Filter"
+            [formControl]="routeFilter"
+          />
         </div>
-        <input
-          type="text"
-          class="form-control col-4"
-          id="route-search"
-          placeholder="Filter"
-          [formControl]="routeFilter"
-        />
+        <button *ngIf="routeFilter.value.length > 0" type="button" id="route-filter-clear" (click)="clearFilter()" class="btn btn-custom" ngbTooltip="Clear filter">
+          <i class="material-icons">clear</i>
+        </button>
       </div>
     </div>
+
 
     <ng-container *ngIf="routeList$ | async as routeList">
       <ul
@@ -41,6 +42,7 @@
           cdkDrag
           cdkDragLockAxis="y"
           cdkDragBoundary=".routes-menu .nav.menu-list"
+          [cdkDragDisabled]="dragIsDisabled"
         >
           <a
             class="nav-link"

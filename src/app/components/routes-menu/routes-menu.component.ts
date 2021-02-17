@@ -43,6 +43,7 @@ export class RoutesMenuComponent implements OnInit {
   public environmentsStatus$: Observable<EnvironmentsStatuses>;
   public duplicatedRoutes$: Observable<DuplicatedRoutesTypes>;
   public routeFilter: FormControl;
+  public dragIsDisabled = false;
 
   constructor(
     private environmentsService: EnvironmentsService,
@@ -56,9 +57,9 @@ export class RoutesMenuComponent implements OnInit {
    * WIP
    * - ignore leading slash when searching
    * - (maybe) highlight the searched term
-   * - move search input next to the plus +
-   * - add a cross to remove the filter
-   * - what to do with drag and drop: should be deactivated
+   * - move search input next to the plus + (DONE => need to valid with Guillaume escape between title and filter)
+   * - add a cross to remove the filter (DONE)
+   * - what to do with drag and drop: should be deactivated (DONE)
    * - add tests
    */
 
@@ -81,6 +82,7 @@ export class RoutesMenuComponent implements OnInit {
     ]).pipe(
       map(([routes, search]) => {
         console.log(search);
+        this.dragIsDisabled = (search as string).length > 0;
 
         return routes.filter(
           (route) =>
@@ -141,5 +143,12 @@ export class RoutesMenuComponent implements OnInit {
 
       this.eventsService.contextMenuEvents.next(menu);
     }
+  }
+
+  /**
+   * Clear the filter route
+   */
+  public clearFilter() {
+    this.routeFilter.patchValue('');
   }
 }
