@@ -2,7 +2,7 @@
 <ng-container *ngIf="activeEnvironment$ | async as activeEnvironment">
   <div class="routes-menu d-flex flex-column h-100" appMousedragDeadzone>
     <div class="menu-header d-flex">
-      <ul class="nav d-flex align-items-center">
+      <ul class="nav d-flex w-100 pt-2 pb-2 align-items-center">
         <li class="nav-item">
           <a
             class="nav-link text-primary"
@@ -12,29 +12,32 @@
             <i class="material-icons">add_box</i>
           </a>
         </li>
+        <li class="nav-item flex-grow-1">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              id="route-search"
+              placeholder="Filter"
+              [formControl]="routeFilter"
+            />
+            <div
+              *ngIf="routeFilter.value.length > 0"
+              class="input-group-prepend"
+            >
+              <button
+                type="button"
+                id="route-filter-clear"
+                (click)="clearFilter()"
+                class="btn btn-custom"
+                ngbTooltip="Clear filter"
+              >
+                <i class="material-icons">clear</i>
+              </button>
+            </div>
+          </div>
+        </li>
       </ul>
-
-      <div class="input-group pt-2 pb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="route-search"
-          placeholder="Filter"
-          [formControl]="routeFilter"
-        />
-        <div class="input-group-prepend">
-          <button
-            *ngIf="routeFilter.value.length > 0"
-            type="button"
-            id="route-filter-clear"
-            (click)="clearFilter()"
-            class="btn btn-custom"
-            ngbTooltip="Clear filter"
-          >
-            <i class="material-icons">clear</i>
-          </button>
-        </div>
-      </div>
     </div>
 
     <ng-container *ngIf="routeList$ | async as routeList">
