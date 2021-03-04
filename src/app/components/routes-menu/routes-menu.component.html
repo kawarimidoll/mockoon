@@ -1,33 +1,41 @@
 <!-- Only display the routes menu if there is at least a selected environment -->
 <ng-container *ngIf="activeEnvironment$ | async as activeEnvironment">
   <div class="routes-menu d-flex flex-column h-100" appMousedragDeadzone>
-    <div class="d-flex">
-      <div class="nav menu-header d-flex justify-content-between nav-item">
-        <a
-          class="nav-link text-primary"
-          (click)="addRoute()"
-          ngbTooltip="Add route"
-        >
-          <i class="material-icons">add_box</i>
-        </a>
-      </div>
+    <div class="menu-header d-flex">
+      <ul class="nav d-flex align-items-center">
+        <li class="nav-item">
+          <a
+            class="nav-link text-primary"
+            (click)="addRoute()"
+            ngbTooltip="Add route"
+          >
+            <i class="material-icons">add_box</i>
+          </a>
+        </li>
+      </ul>
 
-      <div class="form-group d-flex">
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            id="route-search"
-            placeholder="Filter"
-            [formControl]="routeFilter"
-          />
+      <div class="input-group pt-2 pb-2">
+        <input
+          type="text"
+          class="form-control"
+          id="route-search"
+          placeholder="Filter"
+          [formControl]="routeFilter"
+        />
+        <div class="input-group-prepend">
+          <button
+            *ngIf="routeFilter.value.length > 0"
+            type="button"
+            id="route-filter-clear"
+            (click)="clearFilter()"
+            class="btn btn-custom"
+            ngbTooltip="Clear filter"
+          >
+            <i class="material-icons">clear</i>
+          </button>
         </div>
-        <button *ngIf="routeFilter.value.length > 0" type="button" id="route-filter-clear" (click)="clearFilter()" class="btn btn-custom" ngbTooltip="Clear filter">
-          <i class="material-icons">clear</i>
-        </button>
       </div>
     </div>
-
 
     <ng-container *ngIf="routeList$ | async as routeList">
       <ul

@@ -61,6 +61,12 @@ export class RoutesMenuComponent implements OnInit {
    * - add a cross to remove the filter (DONE)
    * - what to do with drag and drop: should be deactivated (DONE)
    * - add tests
+   *
+   * TODO
+   * - put filter state in store
+   * - use store in combine latest
+   * - update store from routeFilter.valueChanges
+   * - reset filter when switching env, add route or DUPLICATE_ROUTE_TO_ANOTHER_ENVIRONMENT
    */
 
   ngOnInit() {
