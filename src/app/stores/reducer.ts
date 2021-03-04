@@ -114,7 +114,8 @@ export const environmentReducer = (
             return activeEnvironmentLogsUUID;
           },
           {}
-        )
+        ),
+        routeFilter: ''
       };
       break;
     }
@@ -516,6 +517,14 @@ export const environmentReducer = (
       newState = {
         ...state,
         environmentsStatus: newEnvironmentsStatus
+      };
+      break;
+    }
+
+    case ActionTypes.UPDATE_ENVIRONMENT_ROUTE_FILTER: {
+      newState = {
+        ...state,
+        routeFilter: action.routerFilter
       };
       break;
     }

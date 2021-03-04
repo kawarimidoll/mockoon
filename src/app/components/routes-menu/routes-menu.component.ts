@@ -14,7 +14,8 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  startWith
+  startWith,
+  tap
 } from 'rxjs/operators';
 import { RoutesContextMenu } from 'src/app/components/context-menu/context-menus';
 import { ContextMenuEvent } from 'src/app/models/context-menu.model';
@@ -22,6 +23,7 @@ import { Settings } from 'src/app/models/settings.model';
 import { EnvironmentsService } from 'src/app/services/environments.service';
 import { EventsService } from 'src/app/services/events.service';
 import { UIService } from 'src/app/services/ui.service';
+import { updateEnvironmentRouteFilterAction } from 'src/app/stores/actions';
 import {
   DuplicatedRoutesTypes,
   EnvironmentsStatuses,
@@ -42,6 +44,7 @@ export class RoutesMenuComponent implements OnInit {
   public activeRoute$: Observable<Route>;
   public environmentsStatus$: Observable<EnvironmentsStatuses>;
   public duplicatedRoutes$: Observable<DuplicatedRoutesTypes>;
+  public routeFilter$: Observable<string>;
   public routeFilter: FormControl;
   public dragIsDisabled = false;
 
@@ -63,10 +66,10 @@ export class RoutesMenuComponent implements OnInit {
    * - add tests
    *
    * TODO
-   * - put filter state in store
-   * - use store in combine latest
-   * - update store from routeFilter.valueChanges
-   * - reset filter when switching env, add route or DUPLICATE_ROUTE_TO_ANOTHER_ENVIRONMENT
+   * - put filter state in store (DONE)
+   * - use store in combine latest (DONE)
+   * - update store from routeFilter.valueChanges (DONE)
+   * - reset filter when switching env, add route or DUPLICATE_ROUTE_TO_ANOTHER_ENVIRONMENT (MISS => DUPLICATE_ROUTE_TO_ANOTHER_ENVIRONMENT)
    */
 
   ngOnInit() {
@@ -77,6 +80,7 @@ export class RoutesMenuComponent implements OnInit {
     this.duplicatedRoutes$ = this.store.select('duplicatedRoutes');
     this.environmentsStatus$ = this.store.select('environmentsStatus');
     this.settings$ = this.store.select('settings');
+    this.routeFilter$ = this.store.select('routeFilter');
 
     this.routeList$ = combineLatest([
       this.store.selectActiveEnvironment().pipe(
@@ -84,13 +88,13 @@ export class RoutesMenuComponent implements OnInit {
         distinctUntilChanged(),
         map((activeEnvironment) => activeEnvironment.routes)
       ),
-      this.routeFilter.valueChanges.pipe(
-        debounceTime(50),
-        startWith(''),
-        map((search) => search as string)
-      )
+      this.routeFilter$
     ]).pipe(
       map(([routes, search]) => {
+        if(search.length === 0) {
+          this.clearFilter();
+        }
+
         this.dragIsDisabled = search.length > 0;
         if (search.charAt(0) === '/') {
           search = search.substring(1);
@@ -107,6 +111,12 @@ export class RoutesMenuComponent implements OnInit {
     this.uiService.scrollRoutesMenu.subscribe((scrollDirection) => {
       this.uiService.scroll(this.routesMenu.nativeElement, scrollDirection);
     });
+
+    this.routeFilter.valueChanges.pipe(
+      debounceTime(50),
+      startWith(''),
+      tap(search => this.store.update(updateEnvironmentRouteFilterAction(search)))
+    ).subscribe();
   }
 
   /**
