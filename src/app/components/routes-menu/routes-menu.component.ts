@@ -55,7 +55,7 @@ export class RoutesMenuComponent implements OnInit {
 
   /**
    * WIP
-   * - ignore leading slash when searching
+   * - ignore leading slash when searching (DONE)
    * - (maybe) highlight the searched term
    * - move search input next to the plus + (DONE => need to valid with Guillaume escape between title and filter)
    * - add a cross to remove the filter (DONE)
@@ -78,11 +78,17 @@ export class RoutesMenuComponent implements OnInit {
         distinctUntilChanged(),
         map((activeEnvironment) => activeEnvironment.routes)
       ),
-      this.routeFilter.valueChanges.pipe(debounceTime(50), startWith(''))
+      this.routeFilter.valueChanges.pipe(
+        debounceTime(50),
+        startWith(''),
+        map((search) => search as string)
+      )
     ]).pipe(
       map(([routes, search]) => {
-        console.log(search);
-        this.dragIsDisabled = (search as string).length > 0;
+        this.dragIsDisabled = search.length > 0;
+        if (search.charAt(0) === '/') {
+          search = search.substring(1);
+        }
 
         return routes.filter(
           (route) =>
